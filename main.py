@@ -5,6 +5,7 @@ import cv2
 import time
 import localizer_params as param
 import drawing_functions as drw
+import measure_functions as meas
 
 # construct the argument parse and parse the arguments
 ap = argparse.ArgumentParser()
@@ -35,6 +36,8 @@ while True:
 
 	cv2.imshow('frame',frame)
 
+	cv2.setMouseCallback('frame', meas.coordinate_click_event)
+
 	if cv2.waitKey(1) & 0xFF == ord('q'):
 		# save the last frame
 		cv2.imwrite('./last_frame.jpg', frame)
@@ -43,5 +46,5 @@ while True:
 
 if args['source'] == 'v':
 	cap.release()
-	
+
 cv2.destroyAllWindows()

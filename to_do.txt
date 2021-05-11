@@ -4,3 +4,10 @@ Projection matrix... if this can transform the whole image, then it should just 
 on the "straightened" image
 
 Need to redo the perspective shift to align y=0 with the wall
+
+5/10 left off on:
+cleaning up the click to measure function
+
+Then, need to verify accuracy.
+
+Then, broadcast it on a network.
