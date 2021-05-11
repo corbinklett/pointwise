@@ -11,6 +11,8 @@ import measure_functions as meas
 ap = argparse.ArgumentParser()
 ap.add_argument("-s", "--source", 
 	help = "specify v for video feed or img file for static image.")
+ap.add_argument("-v", "--verbose",
+	help = "various functions will provide extra information.")
 args = vars(ap.parse_args())
 
 if args['source'] == 'v':
@@ -24,7 +26,7 @@ else:
 
 
 # set properties of frame
-time.sleep(2.0)
+# time.sleep(2.0)
 
 while True:
 	if args['source'] == 'v':
@@ -36,7 +38,9 @@ while True:
 
 	cv2.imshow('frame',frame)
 
-	cv2.setMouseCallback('frame', meas.coordinate_click_event)
+	cv2.setMouseCallback('frame', meas.coordinate_click_event, frame)
+
+	# Broadcast data here
 
 	if cv2.waitKey(1) & 0xFF == ord('q'):
 		# save the last frame

@@ -18,3 +18,5 @@ yp_parking_line = int(yp_parking_line_pct*frame_height)
 yp_center_line = int(yp_center_line_pct*frame_height)
 yp_road_far = int(yp_road_far_pct*frame_height)
 
+# vanishing point
+vanish_point = (300,20)
