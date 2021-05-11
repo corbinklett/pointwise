@@ -1,0 +1,6 @@
+make a mouse-click tool that will show distances between objects (in real life)
+
+Projection matrix... if this can transform the whole image, then it should just tell me where the pixel would be 
+on the "straightened" image
+
+Need to redo the perspective shift to align y=0 with the wall

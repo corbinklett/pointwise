@@ -1,33 +1,47 @@
 from collections import deque
-from imutils.video import VideoStream
 import numpy as np
 import argparse
 import cv2
-import imutils
 import time
+import localizer_params as param
+import drawing_functions as drw
 
 # construct the argument parse and parse the arguments
 ap = argparse.ArgumentParser()
-# ap.add_argument("-v", "--video",
-# 	help="path to the (optional) video file")
-ap.add_argument("-b", "--buffer", type=int, default=64,
-	help="max buffer size")
+ap.add_argument("-s", "--source", 
+	help = "specify v for video feed or img file for static image.")
 args = vars(ap.parse_args())
 
-vs = VideoStream(src=0).start()
+if args['source'] == 'v':
+	# get video stream
+	cap = cv2.VideoCapture(0)
+    # cap.set(4, 720)
+else:
+	img = args['source']
+	frame = cv2.imread(img)
+	
 
-# allow the camera or video file to warm up
+
+# set properties of frame
 time.sleep(2.0)
 
 while True:
-	frame = vs.read()
+	if args['source'] == 'v':
+		ret, frame = cap.read()
 
-# relationship between pixel and distance
-# what is the meters per pixel? mp = meters per pixel
-# need to measure the lines and do a regression (polynomial?)
-# to come up with relationship for x position and y position (a 2D polynomial fit)
-dist = a*p**2
+	frame = cv2.resize(frame, (param.frame_width,param.frame_height), interpolation = cv2.INTER_AREA)
 
-# encode lines
-lane1 = 
-line_x =np.array([x_low, x_high])
+	frame = drw.draw_guidelines(frame)
+
+	cv2.imshow('frame',frame)
+
+	if cv2.waitKey(1) & 0xFF == ord('q'):
+		# save the last frame
+		cv2.imwrite('./last_frame.jpg', frame)
+		break
+
+
+if args['source'] == 'v':
+	cap.release()
+	
+cv2.destroyAllWindows()
