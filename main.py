@@ -3,9 +3,13 @@ import numpy as np
 import argparse
 import cv2
 import time
+import socket
+import pickle
 import localizer_params as param
 import drawing_functions as drw
 import measure_functions as meas
+
+HEADERSIZE = 10 
 
 # construct the argument parse and parse the arguments
 ap = argparse.ArgumentParser()
@@ -13,7 +17,10 @@ ap.add_argument("-s", "--source",
 	help = "specify v for video feed or img file for static image.")
 ap.add_argument("-v", "--verbose",
 	help = "various functions will provide extra information.")
+ap.add_argument("-c", "--connect", action = "store_true",
+	help = "Connect to server and send data.")
 args = vars(ap.parse_args())
+
 
 if args['source'] == 'v':
 	# get video stream
@@ -22,13 +29,13 @@ if args['source'] == 'v':
 else:
 	img = args['source']
 	frame = cv2.imread(img)
+
+if args['connect'] == True:
+	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	s.connect((socket.gethostname(), 1234))
 	
-
-
-# set properties of frame
-# time.sleep(2.0)
-
 while True:
+
 	if args['source'] == 'v':
 		ret, frame = cap.read()
 
