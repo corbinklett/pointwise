@@ -10,6 +10,9 @@ import drawing_functions as drw
 import measure_functions as meas
 
 HEADERSIZE = 10 
+IP = "127.0.0.1"
+PORT = 1234
+my_client_id = "sensor"
 
 # construct the argument parse and parse the arguments
 ap = argparse.ArgumentParser()
@@ -31,8 +34,27 @@ else:
 	frame = cv2.imread(img)
 
 if args['connect'] == True:
-	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	s.connect((socket.gethostname(), 1234))
+	client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	client_socket.connect((IP, PORT))
+	client_socket.setblocking(False)
+	client_id = my_client_id.encode('utf-8')
+	client_id_header = f"{len(my_client_id):<{HEADERSIZE}}".encode('utf-8')
+	client_socket.send(client_id_header + client_id)
+	
+	# send map data
+	# test x-y coordinate
+	test_data = np.array([1,2])
+	msg = pickle.dumps(test_data)
+	print(len(msg))
+	msg = bytes(f"{len(msg):<{HEADERSIZE}}", 'utf-8') + msg
+	client_socket.send(msg)
+
+	# broadcast static data
+	# gps coord of sensor
+	msg = pickle.dumps(param.sensor_gps)
+	msg = bytes(f"{len(msg):<{HEADERSIZE}}", 'utf-8') + msg
+	client_socket.send(msg)
+
 	
 while True:
 
@@ -47,7 +69,8 @@ while True:
 
 	cv2.setMouseCallback('frame', meas.coordinate_click_event, frame)
 
-	# Broadcast data here
+	# Broadcast dynamic data here
+
 
 	if cv2.waitKey(1) & 0xFF == ord('q'):
 		# save the last frame

@@ -20,3 +20,6 @@ yp_road_far = int(yp_road_far_pct*frame_height)
 
 # vanishing point
 vanish_point = (490,0)
+
+# GPS data
+sensor_gps = (33.765799846947594, -84.35375453370777)
