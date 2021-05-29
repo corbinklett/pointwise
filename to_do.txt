@@ -11,3 +11,10 @@ cleaning up the click to measure function
 Then, need to verify accuracy.
 
 Then, broadcast it on a network.
+
+
+Sensor GPS estimate: 33.765799846947594, -84.35375453370777
+
+5/25 left off on trying to pass the coordinate click
+
+

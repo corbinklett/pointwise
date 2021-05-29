@@ -1,8 +1,13 @@
 import cv2
 import localizer_params as param
 import numpy as np
+import comm_functions as comm
+
+global coord_clicked
+coord_clicked = 0
 
 def get_coordinate(xp,yp):
+    global coord_clicked
     # xp, yp are the coordinates in pixels in the image frame 
     # (upper left corner of the image)
 
@@ -67,9 +72,10 @@ def get_coordinate(xp,yp):
         P3_Y = P2_Y - cos_theta*D_P2P3
     
     print(P3_Y)
+    coord_clicked = P3_Y
+
     # need to figure out x coordinate
     
-
 def coordinate_click_event(event, x, y, flags, img):
 
     # x and y are in the xp-yp (image) frame
@@ -86,6 +92,7 @@ def coordinate_click_event(event, x, y, flags, img):
                     str(y), (x,y), font,
                     1, (255, 0, 0), 2)
         cv2.imshow('frame', img)
+
 
 
 

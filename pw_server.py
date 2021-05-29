@@ -8,7 +8,7 @@ HEADER_LENGTH = 10
 # should have incoming data coming to this file from client: image processor/filter
 
 IP = "127.0.0.1"
-PORT = 1234
+PORT = 1235
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -96,7 +96,7 @@ while True:
             # Receive message - ASSUME IT IS PICKLED DATA
             message = receive_pickled_message(notified_socket)
             print(message)
-            
+
             # If False, client disconnected, cleanup
             if message is False:
                 print('Closed connection from: ')

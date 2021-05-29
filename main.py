@@ -8,10 +8,11 @@ import pickle
 import localizer_params as param
 import drawing_functions as drw
 import measure_functions as meas
+import comm_functions as comm
 
 HEADERSIZE = 10 
 IP = "127.0.0.1"
-PORT = 1234
+PORT = 1235
 my_client_id = "sensor"
 
 # construct the argument parse and parse the arguments
@@ -24,7 +25,6 @@ ap.add_argument("-c", "--connect", action = "store_true",
 	help = "Connect to server and send data.")
 args = vars(ap.parse_args())
 
-
 if args['source'] == 'v':
 	# get video stream
 	cap = cv2.VideoCapture(0)
@@ -34,28 +34,17 @@ else:
 	frame = cv2.imread(img)
 
 if args['connect'] == True:
-	client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	client_socket.connect((IP, PORT))
-	client_socket.setblocking(False)
-	client_id = my_client_id.encode('utf-8')
-	client_id_header = f"{len(my_client_id):<{HEADERSIZE}}".encode('utf-8')
-	client_socket.send(client_id_header + client_id)
+	client_socket = comm.connect(IP, PORT, my_client_id)
 	
-	# send map data
 	# test x-y coordinate
 	test_data = np.array([1,2])
-	msg = pickle.dumps(test_data)
-	print(len(msg))
-	msg = bytes(f"{len(msg):<{HEADERSIZE}}", 'utf-8') + msg
-	client_socket.send(msg)
+	comm.broadcast_data(test_data, client_socket)
 
-	# broadcast static data
 	# gps coord of sensor
-	msg = pickle.dumps(param.sensor_gps)
-	msg = bytes(f"{len(msg):<{HEADERSIZE}}", 'utf-8') + msg
-	client_socket.send(msg)
+	comm.broadcast_data(param.sensor_gps, client_socket)
 
-	
+old_coord = meas.coord_clicked
+
 while True:
 
 	if args['source'] == 'v':
@@ -67,16 +56,17 @@ while True:
 
 	cv2.imshow('frame',frame)
 
+	old_coord = meas.coord_clicked
 	cv2.setMouseCallback('frame', meas.coordinate_click_event, frame)
-
-	# Broadcast dynamic data here
-
 
 	if cv2.waitKey(1) & 0xFF == ord('q'):
 		# save the last frame
 		cv2.imwrite('./last_frame.jpg', frame)
 		break
 
+	# Broadcast data to server
+	if meas.coord_clicked != old_coord:
+		comm.broadcast_data(meas.coord_clicked, client_socket)
 
 if args['source'] == 'v':
 	cap.release()
