@@ -16,6 +16,10 @@ server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 server_socket.bind((IP, PORT))
 server_socket.listen()
 sockets_list = [server_socket]
+
+vehicle_clients = []
+sensor_clients = []
+
 print(f'Listening for connections on {IP}:{PORT}...')
 
 # Handles message receiving
@@ -49,7 +53,7 @@ def receive_pickled_message(client_socket):
         # Convert header to int value
         message_length = int(message_header.decode('utf-8').strip())
         message = client_socket.recv(message_length)
-        return pickle.loads(message)
+        return message_length, message, pickle.loads(message)
 
     except:
         return False
@@ -91,11 +95,27 @@ while True:
             msg = receive_message(client_socket)
 
 
-        # Else existing socket is sending a message
+            # If False - client disconnected before he sent his name
+            if msg is False:
+                continue
+
+            # Add accepted socket to select.select() list
+            sockets_list.append(client_socket)
+
+            # Also save username and username header
+            if msg['data'].decode('utf-8') == "s":
+                #sensor_clients[client_socket] 
+                sensor_clients.append(client_socket)
+                print("as a sensor")
+            elif msg['data'].decode('utf-8') == "v":
+                vehicle_clients.append(client_socket)
+                print("as a vehicle")
+
+
+        # Else existing socket is sending a message (and is pickled)
         else:
-            # Receive message - ASSUME IT IS PICKLED DATA
+            # Receive message - ASSUME IT IS PICKLED DATA FROM SENSOR
             message = receive_pickled_message(notified_socket)
-            print(message)
 
             # If False, client disconnected, cleanup
             if message is False:
@@ -108,6 +128,17 @@ while True:
                 # del clients[notified_socket]
 
                 continue
+
+            # broadcast sensor data to clients
+            unpickled_data = message[2]
+            print(unpickled_data)
+
+            pickled_data = message[1]
+            message_len = message[0]
+            # broadcast message to "vehicle" subscibers
+            for vehicle_socket in vehicle_clients:
+                msg = bytes(f"{message_len:<{HEADER_LENGTH}}", 'utf-8') + pickled_data
+                vehicle_socket.send(msg)
 
 
     # It's not really necessary to have this, but will handle some socket exceptions just in case

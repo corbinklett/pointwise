@@ -16,5 +16,7 @@ Then, broadcast it on a network.
 Sensor GPS estimate: 33.765799846947594, -84.35375453370777
 
 5/25 left off on trying to pass the coordinate click
+5/29 - trying to get car to subscribe to server and receive data sent from pw
+(left off on getting pw_server to send out data that comes in to the listeners)
 
 

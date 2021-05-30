@@ -11,9 +11,9 @@ import measure_functions as meas
 import comm_functions as comm
 
 HEADERSIZE = 10 
+CLIENT_TYPE = "s"
 IP = "127.0.0.1"
 PORT = 1235
-my_client_id = "sensor"
 
 # construct the argument parse and parse the arguments
 ap = argparse.ArgumentParser()
@@ -34,7 +34,7 @@ else:
 	frame = cv2.imread(img)
 
 if args['connect'] == True:
-	client_socket = comm.connect(IP, PORT, my_client_id)
+	client_socket = comm.connect(IP, PORT, CLIENT_TYPE)
 	
 	# test x-y coordinate
 	test_data = np.array([1,2])
@@ -70,5 +70,8 @@ while True:
 
 if args['source'] == 'v':
 	cap.release()
+
+if args['connect'] == True:
+	# close the connection?
 
 cv2.destroyAllWindows()
